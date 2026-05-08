@@ -9,4 +9,3 @@ build-pi/cache/
 bitbake.lock
 pseudodone
 *.log
-bitbake-cookerdaemon.log
