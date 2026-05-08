@@ -5,6 +5,7 @@ pub struct MockComms {
     buffer: VecDeque<Vec<u8>>,
 }
 
+/// Implements a Mock comm setup that just does a loopback
 impl MockComms {
     pub fn new() -> Self {
         Self {

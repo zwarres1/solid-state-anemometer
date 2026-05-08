@@ -1,7 +1,7 @@
-use comms_project::poke_mcu;
+use comms_project::request_wind_speed;
 use anyhow::Result;
 
 fn main() -> Result<()> {
-    poke_mcu()?;
+    request_wind_speed()?;
     Ok(())
 }

@@ -1,0 +1,3 @@
+tests:
+  comms.protocol.parser:
+    tags: comms protocol
