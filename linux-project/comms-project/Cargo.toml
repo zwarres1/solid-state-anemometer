@@ -2,6 +2,8 @@
 name = "comms-project"
 version = "0.1.0"
 edition = "2021"
+description = "Rust data logger for STM32 wind sensor"
+repository = "https://github.com/zwarres1/solid-state-anemometer/"
 
 [dependencies]
 anyhow = "1.0.100"
