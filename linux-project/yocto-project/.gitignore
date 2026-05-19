@@ -1,9 +1,7 @@
 # Yocto Build Directories
-build-pi/tmp/
-build-pi/sstate-cache/
-build-pi/downloads/
-build-pi/workspace/
-build-pi/cache/
+build-pi/
+downloads/
+sstate-cache/
 
 # Ignore BitBake lock files
 bitbake.lock
