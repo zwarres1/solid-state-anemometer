@@ -3,7 +3,7 @@ ctrl_interface_group=0
 update_config=1
 
 network={
-    ssid="Here4TheWifiReasons"
-    psk="forcebalancepush"
+    ssid="YOUR_SSID_HERE"
+    psk="YOUR_PASSWORD_HERE"
     key_mgmt=WPA-PSK
 }

@@ -7,3 +7,6 @@ sstate-cache/
 bitbake.lock
 pseudodone
 *.log
+
+# Ignore local WiFi credentials
+wpa_supplicant-wlan0.conf
