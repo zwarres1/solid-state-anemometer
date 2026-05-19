@@ -1,0 +1,12 @@
+# Yocto Build Directories
+build-pi/
+downloads/
+sstate-cache/
+
+# Ignore BitBake lock files
+bitbake.lock
+pseudodone
+*.log
+
+# Ignore local WiFi credentials
+wpa_supplicant-wlan0.conf
