@@ -1,5 +1,8 @@
 #include "wind_speed_calculator.hpp"
 
+// TODO: This is very much just a dummy calculation just to provide a place
+// where the eventual math (FFTs and such) will live. A rolling average
+// of an potentiometer has nothing to do with a real wind speed caused by vibrations
 uint16_t WindSpeedCalculator::set_new_reading(uint16_t new_reading)
 {
     if(m_rolling_average == 0)

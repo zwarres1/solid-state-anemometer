@@ -19,9 +19,9 @@ void comms::comms_entry_point(void* p1, void* p2, void* p3)
     auto comms_backend = &uart_backend;
     comms_backend->init();
 
-    // TODO: these probably shouldn't exist, here for debug, instead poll rx for specific commands
-    uint8_t tx_buffer[32];
-    uint8_t rx_buffer[32];
+    static constexpr size_t MAX_MESSAGE_LENGTH = 32; // TODO: This is overkill, finalize this
+    uint8_t tx_buffer[MAX_MESSAGE_LENGTH];
+    uint8_t rx_buffer[MAX_MESSAGE_LENGTH];
 
     uint16_t latest_wind_speed{};
 
@@ -29,11 +29,13 @@ void comms::comms_entry_point(void* p1, void* p2, void* p3)
     {
         size_t rx_length = 0;
 
-        // TODO: Comms polling system is pretty hacky right now, only can respond to one comms type
+        // TODO: Comms polling system is pretty hacky right now, read_bytes
+        // will hold forever while waiting on a semaphore from interrupt.
+        // It'll return as a CommsRequestType::Error until a valid message comes in
         CommsRequestType comms_request_type{CommsRequestType::Error};
         while(comms_request_type == CommsRequestType::Error)
         {
-            rx_length += comms_backend->read_bytes(&rx_buffer[rx_length], 32 - rx_length);
+            rx_length += comms_backend->read_bytes(&rx_buffer[rx_length], MAX_MESSAGE_LENGTH - rx_length);
             comms_request_type = protocol::process_incoming_bytes(rx_buffer, rx_length);
         }
 
@@ -44,20 +46,32 @@ void comms::comms_entry_point(void* p1, void* p2, void* p3)
         }
         printk("\n");
 
-        // Drain the queue to get the latest
-        uint16_t temp_wind_speed;
-        while (k_msgq_get(&calculated_data_queue, &temp_wind_speed, K_NO_WAIT) == 0)
-        {
-            latest_wind_speed = temp_wind_speed; 
-        }
+        size_t tx_message_length{0};
+        switch(comms_request_type) {
+            case CommsRequestType::WindSpeed:
+            {
+                // Drain the queue to get the latest
+                uint16_t temp_wind_speed;
+                while (k_msgq_get(&calculated_data_queue, &temp_wind_speed, K_NO_WAIT) == 0)
+                {
+                    latest_wind_speed = temp_wind_speed; 
+                }
 
-        // TODO: This should sit in a struct
-        // Speed_H, Speed_L, Angle_H, Angle_L
-        uint8_t wind_speed_message[] = {(latest_wind_speed >> 8) & 0xFF, 
-                                        latest_wind_speed & 0xFF, 
-                                        0x00, 0x00};
-        if(auto tx_message_length = protocol::build_packet(wind_speed_message, 4, tx_buffer);
-            tx_message_length > 0)
+                // TODO: angle, putting in zero for now
+                tx_message_length = protocol::build_wind_speed_packet(latest_wind_speed, 0, tx_buffer);
+                break;
+            }
+            case CommsRequestType::Version:
+            {
+                tx_message_length = protocol::build_version_packet(tx_buffer);
+                break;
+            }
+            case CommsRequestType::Error:
+                [[fallthrough]];
+            default:
+                [[fallthrough]];
+        }
+        if(tx_message_length > 0)
         {
             comms_backend->send_packet(tx_buffer, tx_message_length);
         }

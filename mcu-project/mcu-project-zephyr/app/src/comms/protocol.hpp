@@ -14,10 +14,7 @@ namespace protocol
     /// TODO: figure out way to discard data if checksum fails (need fixed packet sizes)
     CommsRequestType process_incoming_bytes(const uint8_t* raw_bytes_in, size_t length_in);
 
-    /// Adds header and checksum to a packet and copies that data into packet_out. Returns final
-    /// packet size.
-    int build_packet(const uint8_t* raw_bytes_in, size_t length_in, uint8_t* packet_out);
+    size_t build_version_packet(uint8_t* packet_out);
 
-    /// Calculates a checksum by XORing each successive byte and returns the calculated checksum
-    uint8_t calculate_checksum(const uint8_t* payload, size_t length);
+    size_t build_wind_speed_packet(uint16_t wind_speed, uint16_t angle, uint8_t* packet_out);
 }
